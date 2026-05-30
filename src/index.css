@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    @apply font-sans bg-slate-50 text-slate-900 antialiased dark:bg-slate-900 dark:text-slate-100;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Scrollbar tipis untuk sidebar */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-400;
+  }
+}
+
+@layer components {
+  /* Kelas utilitas untuk transisi halaman */
+  .animasi-masuk {
+    @apply animate-masuk-bawah;
+  }
+
+  /* Layout container utama */
+  .kontainer-halaman {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
+
+@layer utilities {
+  /* Teks yang terpotong (ellipsis) */
+  .teks-potong {
+    @apply overflow-hidden whitespace-nowrap text-ellipsis;
+  }
+
+  /* Grid responsif otomatis */
+  .grid-otomatis {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}

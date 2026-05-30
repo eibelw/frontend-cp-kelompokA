@@ -6,9 +6,9 @@ export const KUNCI_SIMPAN = {
 } as const;
 
 /** URL dasar API */
-export const URL_API = '/api/v1';
+export const URL_API = import.meta.env.VITE_API_URL ?? 'https://backend-cp-kelompok-a.vercel.app/api/v1';
 
-/** URL dasar untuk file upload (foto/dokumen) */
+/** URL dasar untuk file upload (foto/dokumen) — tidak dipakai sejak migrasi ke Supabase Storage */
 export const URL_UPLOAD = '/uploads';
 
 /** Label status absensi dalam bahasa Indonesia */

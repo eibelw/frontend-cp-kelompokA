@@ -22,6 +22,16 @@ interface KonteksOtentikasiTipe extends StateOtentikasi {
 
 const KonteksOtentikasi = createContext<KonteksOtentikasiTipe | null>(null);
 
+/** Cek apakah JWT sudah kadaluarsa tanpa perlu request ke server */
+function tokenSudahKadaluarsa(token: string): boolean {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.exp * 1000 < Date.now();
+  } catch {
+    return true;
+  }
+}
+
 /** Provider untuk state autentikasi global */
 export function PenyediaOtentikasi({ children }: { children: ReactNode }) {
   const [state, setState] = useState<StateOtentikasi>({
@@ -39,6 +49,12 @@ export function PenyediaOtentikasi({ children }: { children: ReactNode }) {
     const penggunaTersimpan = localStorage.getItem(KUNCI_SIMPAN.PENGGUNA);
 
     if (token && tokenPembaruan && penggunaTersimpan) {
+      // Jika token sudah kadaluarsa, paksa logout tanpa perlu request ke server
+      if (tokenSudahKadaluarsa(token) && tokenSudahKadaluarsa(tokenPembaruan)) {
+        bersihkanSesi();
+        setState((prev) => ({ ...prev, sedangMemuat: false }));
+        return;
+      }
       try {
         const pengguna: Pengguna = JSON.parse(penggunaTersimpan);
         setState({

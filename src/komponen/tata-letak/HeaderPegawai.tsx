@@ -5,6 +5,8 @@ import { gunakanOtentikasi } from '@/konteks/KonteksOtentikasi';
 import { gunakanNotifikasi } from '@/konteks/KonteksNotifikasi';
 import { gunakanTema } from '@/konteks/KonteksTema';
 import AvatarPengguna from '@/komponen/ui/AvatarPengguna';
+import Modal, { FooterModal } from '@/komponen/ui/Modal';
+import Tombol from '@/komponen/ui/Tombol';
 import { formatTanggal } from '@/utils/formatTanggal';
 
 interface PropsHeader {
@@ -19,6 +21,7 @@ function HeaderPegawai({ judulHalaman }: PropsHeader) {
   const navigasi = useNavigate();
   const tanggalSekarang = formatTanggal(new Date());
   const [dropdownTerbuka, setDropdownTerbuka] = useState(false);
+  const [konfirmasiTerbuka, setKonfirmasiTerbuka] = useState(false);
   const refDropdown = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,12 +35,38 @@ function HeaderPegawai({ judulHalaman }: PropsHeader) {
   }, []);
 
   function tanganiKeluar() {
+    setDropdownTerbuka(false);
+    setKonfirmasiTerbuka(true);
+  }
+
+  function tanganiKonfirmasiKeluar() {
     keluar();
     sukses('Berhasil keluar', 'Sampai jumpa kembali!');
     navigasi('/masuk');
   }
 
   return (
+    <>
+    <Modal
+      terbuka={konfirmasiTerbuka}
+      padaTutup={() => setKonfirmasiTerbuka(false)}
+      judul="Konfirmasi Keluar"
+      ukuran="kecil"
+    >
+      <p className="text-sm text-slate-600 dark:text-slate-400 text-center">
+        Apakah kamu yakin ingin keluar dari aplikasi?
+      </p>
+      <FooterModal>
+        <Tombol varian="sekunder" onClick={() => setKonfirmasiTerbuka(false)}>
+          Batal
+        </Tombol>
+        <Tombol varian="bahaya" onClick={tanganiKonfirmasiKeluar}>
+          <LogOut size={15} />
+          Keluar
+        </Tombol>
+      </FooterModal>
+    </Modal>
+
     <header className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-4 sm:px-6 py-4">
       <div className="max-w-md mx-auto flex items-center justify-between">
         <div>
@@ -107,6 +136,7 @@ function HeaderPegawai({ judulHalaman }: PropsHeader) {
         )}
       </div>
     </header>
+    </>
   );
 }
 

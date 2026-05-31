@@ -1,9 +1,17 @@
-/** Parse string tanggal ke Date. YYYY-MM-DD diperlakukan sebagai lokal bukan UTC. */
+/** Parse string tanggal ke Date.
+ *  - YYYY-MM-DD          → lokal (tanpa jam)
+ *  - datetime string     → selalu UTC (tambahkan Z jika tidak ada timezone)
+ */
 function parseDate(tanggal: string | Date): Date {
   if (tanggal instanceof Date) return tanggal;
+  // Format tanggal saja (YYYY-MM-DD) → perlakukan sebagai lokal agar tidak bergeser hari
   if (/^\d{4}-\d{2}-\d{2}$/.test(tanggal)) {
     const [y, m, d] = tanggal.split('-').map(Number);
     return new Date(y, m - 1, d);
+  }
+  // Datetime string tanpa info timezone → anggap UTC (tambah Z)
+  if (!/[Zz]$/.test(tanggal) && !/[+-]\d{2}:?\d{2}$/.test(tanggal)) {
+    return new Date(tanggal + 'Z');
   }
   return new Date(tanggal);
 }
@@ -22,18 +30,20 @@ export function formatTanggalPendek(tanggal: string | Date): string {
   }).format(parseDate(tanggal));
 }
 
-/** Format waktu ke HH:mm (mis: 08:30) */
+/** Format waktu ke HH:mm (mis: 08:30) — selalu dalam WIB */
 export function formatWaktu(tanggal: string | Date): string {
   return new Intl.DateTimeFormat('id-ID', {
     hour: '2-digit', minute: '2-digit', hour12: false,
+    timeZone: 'Asia/Jakarta',
   }).format(parseDate(tanggal));
 }
 
-/** Format waktu lengkap dengan tanggal (mis: 20 Mei 2026, 08:30) */
+/** Format waktu lengkap dengan tanggal (mis: 20 Mei 2026, 08:30) — selalu dalam WIB */
 export function formatWaktuLengkap(tanggal: string | Date): string {
   return new Intl.DateTimeFormat('id-ID', {
     day: 'numeric', month: 'short', year: 'numeric',
     hour: '2-digit', minute: '2-digit', hour12: false,
+    timeZone: 'Asia/Jakarta',
   }).format(parseDate(tanggal));
 }
 

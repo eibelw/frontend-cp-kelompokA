@@ -18,7 +18,6 @@ import { gunakanNotifikasi } from '@/konteks/KonteksNotifikasi';
 import { ambilPesanError } from '@/api/klien';
 import type { Pengguna } from '@/tipe/pengguna';
 import { LABEL_PERAN } from '@/utils/konstanta';
-import { URL_UPLOAD } from '@/utils/konstanta';
 
 const LABEL_JENIS_KELAMIN: Record<string, string> = {
   'laki-laki': 'Laki-laki',

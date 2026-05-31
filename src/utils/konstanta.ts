@@ -17,12 +17,14 @@ export const LABEL_STATUS_ABSENSI: Record<string, string> = {
   izin: 'Izin',
   sakit: 'Sakit',
   alpa: 'Alpa',
+  cuti: 'Cuti',
 };
 
 /** Label jenis izin dalam bahasa Indonesia */
 export const LABEL_JENIS_IZIN: Record<string, string> = {
   izin: 'Izin',
   sakit: 'Sakit',
+  cuti: 'Cuti',
 };
 
 /** Label status pengajuan izin */

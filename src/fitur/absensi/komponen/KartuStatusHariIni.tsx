@@ -5,7 +5,6 @@ import { SkeletonKartu } from '@/komponen/ui/Pemuat';
 import Tombol from '@/komponen/ui/Tombol';
 import type { Absensi } from '@/tipe/absensi';
 import { formatWaktu, formatTanggal } from '@/utils/formatTanggal';
-import { URL_UPLOAD } from '@/utils/konstanta';
 
 interface PropsKartuStatus {
   absensi: Absensi | null;
@@ -79,9 +78,8 @@ function KartuStatusHariIni({
       {/* Foto selfie (jika ada) */}
       {absensi?.urlFoto && (
         <div className="mb-4">
-          {/* Ganti path dengan URL_UPLOAD + urlFoto dari backend */}
           <img
-            src={`${URL_UPLOAD}/${absensi.urlFoto}`}
+            src={absensi.urlFoto}
             alt="Foto absensi masuk"
             className="w-16 h-16 rounded-xl object-cover border-2 border-white shadow"
             onError={(e) => {

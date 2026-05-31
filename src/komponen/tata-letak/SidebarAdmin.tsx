@@ -18,6 +18,8 @@ import { gunakanOtentikasi } from '@/konteks/KonteksOtentikasi';
 import { gunakanNotifikasi } from '@/konteks/KonteksNotifikasi';
 import { gunakanTema } from '@/konteks/KonteksTema';
 import AvatarPengguna from '@/komponen/ui/AvatarPengguna';
+import Modal, { FooterModal } from '@/komponen/ui/Modal';
+import Tombol from '@/komponen/ui/Tombol';
 import { cn } from '@/utils/pembantu';
 
 interface ItemMenu {
@@ -43,8 +45,14 @@ function SidebarAdmin() {
   const { tema, gantiTema } = gunakanTema();
   const navigasi = useNavigate();
   const [mobileTerbuka, setMobileTerbuka] = useState(false);
+  const [konfirmasiTerbuka, setKonfirmasiTerbuka] = useState(false);
 
   function tanganiKeluar() {
+    setMobileTerbuka(false);
+    setKonfirmasiTerbuka(true);
+  }
+
+  function tanganiKonfirmasiKeluar() {
     keluar();
     sukses('Berhasil keluar', 'Sampai jumpa kembali!');
     navigasi('/masuk');
@@ -118,6 +126,26 @@ function SidebarAdmin() {
 
   return (
     <>
+      <Modal
+        terbuka={konfirmasiTerbuka}
+        padaTutup={() => setKonfirmasiTerbuka(false)}
+        judul="Konfirmasi Keluar"
+        ukuran="kecil"
+      >
+        <p className="text-sm text-slate-600 dark:text-slate-400 text-center">
+          Apakah kamu yakin ingin keluar dari aplikasi?
+        </p>
+        <FooterModal>
+          <Tombol varian="sekunder" onClick={() => setKonfirmasiTerbuka(false)}>
+            Batal
+          </Tombol>
+          <Tombol varian="bahaya" onClick={tanganiKonfirmasiKeluar}>
+            <LogOut size={15} />
+            Keluar
+          </Tombol>
+        </FooterModal>
+      </Modal>
+
       {/* Sidebar desktop */}
       <aside className="hidden lg:flex flex-col w-60 flex-shrink-0 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 h-screen sticky top-0">
         {isiSidebar}

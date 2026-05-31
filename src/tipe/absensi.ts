@@ -1,7 +1,7 @@
 import type { Pengguna } from './pengguna';
 
 /** Status kehadiran */
-export type StatusAbsensi = 'hadir' | 'izin' | 'sakit' | 'alpa';
+export type StatusAbsensi = 'hadir' | 'izin' | 'sakit' | 'alpa' | 'cuti';
 
 /** Tipe data absensi dari API */
 export interface Absensi {

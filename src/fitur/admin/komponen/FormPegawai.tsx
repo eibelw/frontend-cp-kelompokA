@@ -93,9 +93,13 @@ function FormPegawai({ terbuka, padaTutup, padaSimpan, pegawaiDiedit }: PropsFor
   function validasi(): boolean {
     if (!nama.trim()) { setPesanError('Nama tidak boleh kosong'); return false; }
     if (!email.trim()) { setPesanError('Email tidak boleh kosong'); return false; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setPesanError('Format email tidak valid'); return false; }
     if (!modeEdit && !idLokasiKantor) { setPesanError('Lokasi kantor wajib dipilih'); return false; }
     if (!modeEdit && !kataSandi) { setPesanError('Kata sandi tidak boleh kosong'); return false; }
     if (!modeEdit && kataSandi.length < 6) { setPesanError('Kata sandi minimal 6 karakter'); return false; }
+    if (!departemen.trim()) { setPesanError('Departemen tidak boleh kosong'); return false; }
+    if (!jabatan.trim()) { setPesanError('Jabatan tidak boleh kosong'); return false; }
+    if (!jenisKelamin) { setPesanError('Jenis kelamin wajib dipilih'); return false; }
     return true;
   }
 
@@ -208,12 +212,14 @@ function FormPegawai({ terbuka, padaTutup, padaSimpan, pegawaiDiedit }: PropsFor
             placeholder="Contoh: IT"
             value={departemen}
             onChange={(e) => setDepartemen(e.target.value)}
+            required
           />
           <Input
             label="Jabatan"
             placeholder="Contoh: Staff"
             value={jabatan}
             onChange={(e) => setJabatan(e.target.value)}
+            required
           />
         </div>
 

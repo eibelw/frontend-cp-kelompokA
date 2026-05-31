@@ -16,7 +16,6 @@ import { ambilPesanError } from '@/api/klien';
 import type { Absensi, FilterAbsensi, KoreksiAbsensi as TipeKoreksi } from '@/tipe/absensi';
 import type { OpsiPilihan } from '@/tipe/umum';
 import { formatTanggal, formatWaktu, formatUntukInput } from '@/utils/formatTanggal';
-import { URL_UPLOAD } from '@/utils/konstanta';
 
 const opsiStatus: OpsiPilihan[] = [
   { nilai: '', label: 'Semua Status' },
@@ -260,7 +259,7 @@ function HalamanAbsensiAdmin() {
               <div>
                 <p className="text-xs text-slate-500 mb-2">Foto Selfie</p>
                 <img
-                  src={`${URL_UPLOAD}/${absensiDetail.urlFoto.replace(/^\/uploads\//, '')}`}
+                  src={absensiDetail.urlFoto}
                   alt="Foto absensi"
                   className="w-32 h-32 rounded-xl object-cover border border-slate-200"
                   onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}

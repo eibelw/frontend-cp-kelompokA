@@ -42,6 +42,7 @@ export function BadgeStatusAbsensi({ status }: { status: StatusAbsensi }) {
     izin: { varian: 'kuning', label: 'Izin' },
     sakit: { varian: 'biru', label: 'Sakit' },
     alpa: { varian: 'merah', label: 'Alpa' },
+    cuti: { varian: 'abu', label: 'Cuti' },
   };
 
   const { varian, label } = konfigurasi[status];

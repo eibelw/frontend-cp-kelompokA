@@ -48,6 +48,82 @@ interface ModalPengaturanProps {
   onSimpan: () => void;
 }
 
+type ModeInput = 'rupiah' | 'persen';
+
+/** Field gaji dengan toggle Rupiah / Persentase dari gaji pokok */
+function FieldGajiFleksibel({
+  label, gajiPokok, nilaiRupiah, onUbahRupiah,
+}: {
+  label: string;
+  gajiPokok: number;
+  nilaiRupiah: number;
+  onUbahRupiah: (v: number) => void;
+}) {
+  const [mode, setMode] = useState<ModeInput>('rupiah');
+  const [persen, setPersen] = useState(0);
+
+  function gantiMode(modeBaru: ModeInput) {
+    if (modeBaru === 'persen') {
+      // Derivasi persentase dari nilai rupiah yang sudah ada
+      const p = gajiPokok > 0 ? Math.round((nilaiRupiah / gajiPokok) * 100) : 0;
+      setPersen(p);
+      onUbahRupiah(Math.round(gajiPokok * p / 100));
+    }
+    setMode(modeBaru);
+  }
+
+  function ubahPersen(p: number) {
+    const dibatasi = Math.min(100, Math.max(0, p));
+    setPersen(dibatasi);
+    onUbahRupiah(Math.round(gajiPokok * dibatasi / 100));
+  }
+
+  const kelasToggle = (aktif: boolean) =>
+    `px-2.5 py-1 text-xs font-medium rounded transition-colors ${
+      aktif
+        ? 'bg-primer-600 text-white'
+        : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600'
+    }`;
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{label}</span>
+        <div className="flex gap-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-600">
+          <button type="button" className={kelasToggle(mode === 'rupiah')} onClick={() => gantiMode('rupiah')}>Rp</button>
+          <button type="button" className={kelasToggle(mode === 'persen')} onClick={() => gantiMode('persen')}>%</button>
+        </div>
+      </div>
+
+      {mode === 'rupiah' ? (
+        <InputRupiah label="" nilai={nilaiRupiah} onUbah={onUbahRupiah} />
+      ) : (
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              min={0}
+              max={100}
+              value={persen}
+              onChange={e => ubahPersen(Number(e.target.value))}
+              className="w-full h-10 px-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primer-500"
+              placeholder="0"
+            />
+            <span className="text-sm text-slate-500 dark:text-slate-400 flex-shrink-0">% dari gaji pokok</span>
+          </div>
+          {/* Tampilkan hasil kalkulasi — read-only */}
+          <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700">
+            <span className="text-xs text-slate-500 dark:text-slate-400">= Rupiah</span>
+            <span className="text-sm font-semibold text-primer-600 dark:text-primer-400">
+              {formatRupiah(nilaiRupiah)}
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ModalPengaturan({ pengaturan, daftarPegawai, daftarPengaturan, onTutup, onSimpan }: ModalPengaturanProps) {
   const [idPengguna, setIdPengguna] = useState<string>(pengaturan?.idPengguna ?? '');
   const [gajiPokok, setGajiPokok] = useState(Number(pengaturan?.gajiPokok ?? 0));
@@ -60,14 +136,12 @@ function ModalPengaturan({ pengaturan, daftarPegawai, daftarPengaturan, onTutup,
   const [pesanError, setPesanError] = useState('');
   const { sukses } = gunakanNotifikasi();
 
-  // Scopes already used by other settings ('' = global, otherwise idPengguna)
   const scopeSudahAda = new Set(
     daftarPengaturan
       .filter(p => p.id !== pengaturan?.id)
       .map(p => p.idPengguna ?? '')
   );
 
-  // Edit mode: show only the current scope (locked). Create mode: hide already-used scopes.
   const opsiPegawai: OpsiPilihan[] = pengaturan
     ? [{ nilai: idPengguna, label: pengaturan.pegawai ? `${pengaturan.pegawai.nama} (${pengaturan.pegawai.idPegawai})` : 'Global (semua pegawai)' }]
     : [
@@ -80,6 +154,7 @@ function ModalPengaturan({ pengaturan, daftarPegawai, daftarPengaturan, onTutup,
   async function simpan() {
     if (!gajiPokok || !berlakuMulai) { setPesanError('Gaji pokok dan tanggal berlaku wajib diisi'); return; }
     setSedangMenyimpan(true);
+    // Yang dikirim ke backend selalu nilai Rupiah, bukan persentase
     const body: PengaturanGajiBody = {
       idPengguna: idPengguna || null,
       gajiPokok, tunjanganKehadiran, potonganPerJamTerlambat: potonganPerJam,
@@ -111,9 +186,24 @@ function ModalPengaturan({ pengaturan, daftarPegawai, daftarPengaturan, onTutup,
           {pesanError && <Peringatan varian="gagal">{pesanError}</Peringatan>}
           <Pilihan label="Berlaku Untuk" opsi={opsiPegawai} value={idPengguna} onChange={e => setIdPengguna(e.target.value)} disabled={!!pengaturan} />
           <InputRupiah label="Gaji Pokok (Rp)" nilai={gajiPokok} onUbah={setGajiPokok} required />
-          <InputRupiah label="Tunjangan Kehadiran (Rp)" nilai={tunjanganKehadiran} onUbah={setTunjanganKehadiran} />
-          <InputRupiah label="Potongan per Jam Terlambat (Rp)" nilai={potonganPerJam} onUbah={setPotonganPerJam} />
-          <InputRupiah label="Potongan per Hari Cuti (Rp)" nilai={potonganCuti} onUbah={setPotonganCuti} />
+          <FieldGajiFleksibel
+            label="Tunjangan Kehadiran"
+            gajiPokok={gajiPokok}
+            nilaiRupiah={tunjanganKehadiran}
+            onUbahRupiah={setTunjanganKehadiran}
+          />
+          <FieldGajiFleksibel
+            label="Potongan per Jam Terlambat"
+            gajiPokok={gajiPokok}
+            nilaiRupiah={potonganPerJam}
+            onUbahRupiah={setPotonganPerJam}
+          />
+          <FieldGajiFleksibel
+            label="Potongan per Hari Cuti"
+            gajiPokok={gajiPokok}
+            nilaiRupiah={potonganCuti}
+            onUbahRupiah={setPotonganCuti}
+          />
           <Input label="Berlaku Mulai" type="date" value={berlakuMulai} onChange={e => setBerlakuMulai(e.target.value)} required />
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={aktif} onChange={e => setAktif(e.target.checked)} className="w-4 h-4 accent-primer-600" />

@@ -7,7 +7,6 @@ import Tombol from '@/komponen/ui/Tombol';
 import { SkeletonKartu } from '@/komponen/ui/Pemuat';
 import type { Izin } from '@/tipe/izin';
 import { formatTanggal } from '@/utils/formatTanggal';
-import { URL_UPLOAD } from '@/utils/konstanta';
 
 interface PropsTabel {
   daftarIzin: Izin[];
@@ -64,7 +63,7 @@ function ModalDetailIzin({ izin, onTutup }: { izin: Izin; onTutup: () => void })
 
             {izin.urlDokumen && (
               <a
-                href={`${URL_UPLOAD}/${izin.urlDokumen}`}
+                href={izin.urlDokumen}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 text-primer-600 dark:text-primer-400 hover:underline"
